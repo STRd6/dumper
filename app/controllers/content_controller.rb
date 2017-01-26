@@ -1,4 +1,4 @@
-class ContentsController < ApplicationController
+class ContentController < ApplicationController
   before_action :set_content, only: [:show, :edit, :update, :destroy]
 
   # GET /contents
@@ -10,15 +10,6 @@ class ContentsController < ApplicationController
   # GET /contents/1
   # GET /contents/1.json
   def show
-  end
-
-  # GET /contents/new
-  def new
-    @content = Content.new
-  end
-
-  # GET /contents/1/edit
-  def edit
   end
 
   # POST /contents
