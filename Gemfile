@@ -35,8 +35,8 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem 'aws-sdk'
 gem 'mailgun-ruby', '~>1.1.2'
-
 gem 'rack-cors', :require => 'rack/cors'
 
 group :development, :test do

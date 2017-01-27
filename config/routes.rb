@@ -5,5 +5,7 @@ Rails.application.routes.draw do
   match "/register" => "welcome#register", :via => :post
   match "/auth" => "welcome#auth", :via => :get
 
+  post "/slurp", to: "content#slurp"
+
   root to: "welcome#index"
 end

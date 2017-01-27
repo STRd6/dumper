@@ -25,13 +25,16 @@ ActiveRecord::Schema.define(version: 20170126184737) do
     t.datetime "updated_at",                                             null: false
   end
 
-  create_table "contents", force: :cascade do |t|
+  create_table "content", force: :cascade do |t|
+    t.integer  "account_id",            null: false
     t.string   "sha256",     limit: 64, null: false
     t.string   "mime_type",             null: false
     t.integer  "size",                  null: false
     t.json     "meta"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+    t.index ["account_id"], name: "index_content_on_account_id", using: :btree
+    t.index ["sha256"], name: "index_content_on_sha256", unique: true, using: :btree
   end
 
   create_table "tokens", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|

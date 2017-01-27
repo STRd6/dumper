@@ -1,5 +1,9 @@
+require 'net/http'
+
 class ContentController < ApplicationController
   before_action :set_content, only: [:show, :edit, :update, :destroy]
+
+  skip_before_action :verify_authenticity_token
 
   # GET /contents
   # GET /contents.json
@@ -10,6 +14,25 @@ class ContentController < ApplicationController
   # GET /contents/1
   # GET /contents/1.json
   def show
+  end
+
+  def slurp
+    # Ingest content from a url
+    url = params[:url]
+
+    logger.info "Slurped"
+
+    content = Content.new(account: current_account)
+    success = content.slurp(url)
+
+    if success
+      logger.info "Slurped"
+      content.save!
+    else
+      # TODO: What should we say here?
+    end
+
+    render json: content
   end
 
   # POST /contents
@@ -42,16 +65,6 @@ class ContentController < ApplicationController
     end
   end
 
-  # DELETE /contents/1
-  # DELETE /contents/1.json
-  def destroy
-    @content.destroy
-    respond_to do |format|
-      format.html { redirect_to contents_url, notice: 'Content was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
-
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_content
@@ -60,6 +73,6 @@ class ContentController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def content_params
-      params.fetch(:content, {})
+      params.require(:content).permit(:sha256, :mime_type, :size)
     end
 end

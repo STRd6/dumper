@@ -2,10 +2,8 @@
 
 one:
   account: one
-  uuid: 
-  valid: false
+  expired: false
 
 two:
   account: two
-  uuid: 
-  valid: false
+  expired: false
