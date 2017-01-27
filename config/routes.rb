@@ -7,5 +7,10 @@ Rails.application.routes.draw do
 
   post "/slurp", to: "content#slurp"
 
+  get "/policy", to: "content#policy"
+
+  get "/upload", to: "content#upload_form"
+  post "/upload", to: "content#upload"
+
   root to: "welcome#index"
 end

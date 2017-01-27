@@ -21,8 +21,19 @@ Reset Rails Postgres Database on Heroku:
 
 > The rake db:reset task is not supported. Heroku apps do not have permission to drop and create databases. Use the heroku pg:reset command instead.
 
+Migrate your db:
+
+    heroku run rake db:migrate
+
 AWS Cheat Sheet:
 
 US Standard is us-east-1
 
 [S3 Put Object from Ruby](https://docs.aws.amazon.com/sdkforruby/api/Aws/S3/Client.html#put_object-instance_method)
+
+Open Questions
+--------------
+
+Cookies and CORS security: Can we use session cookies as http only and be sure that they are not sent during CORS requests?
+
+

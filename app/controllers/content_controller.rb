@@ -1,6 +1,7 @@
 require 'net/http'
 
 class ContentController < ApplicationController
+  before_action :require_account, except: [:show, :index]
   before_action :set_content, only: [:show, :edit, :update, :destroy]
 
   skip_before_action :verify_authenticity_token
@@ -16,21 +17,56 @@ class ContentController < ApplicationController
   def show
   end
 
+  def policy
+    # Return a signed s3 policy that an acconut can use to upload to
+    policy = Policy.generate namespace: "/u/#{current_account.id}/"
+
+    render json: policy
+  end
+
+  def copy
+    # Copy a verified object from a sub-s3 folder to
+    # the main one
+  end
+
+  def email
+    # TODO: Compute sha256 and mime of attachments
+    # Do basically the same as slurp
+    # Add Email tag
+  end
+
+  def upload
+    content_items = params["content"]["upload"].map do |file|
+      logger.info file
+
+      content = Content.from_file(file, file.content_type)
+
+      content.add_tags_for_account(current_account, [
+        "Upload",
+        "Uncategorized"
+      ])
+      content.save
+
+      content
+    end
+
+    render json: content_items
+  end
+
   def slurp
     # Ingest content from a url
     url = params[:url]
 
     logger.info "Slurped"
 
-    content = Content.new.slurp(url, current_account)
+    content = Content.new.slurp(url)
 
     if content
       logger.info "Slurped"
-      content.tags.new({
-        account: current_account,
-        content: content,
-        tag: "Uncategorized"
-      })
+      content.add_tags_for_account(current_account, [
+        "Slurp",
+        "Uncategorized"
+      ])
       content.save!
 
       render json: content
