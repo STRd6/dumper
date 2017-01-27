@@ -22,17 +22,22 @@ class ContentController < ApplicationController
 
     logger.info "Slurped"
 
-    content = Content.new(account: current_account)
-    success = content.slurp(url)
+    content = Content.new.slurp(url, current_account)
 
-    if success
+    if content
       logger.info "Slurped"
+      content.tags.new({
+        account: current_account,
+        content: content,
+        tag: "Uncategorized"
+      })
       content.save!
-    else
-      # TODO: What should we say here?
-    end
 
-    render json: content
+      render json: content
+    else
+      # TODO: Can we be more specific with our errors?
+      render json: {error: "Failed to slurp", status: 422}
+    end
   end
 
   # POST /contents

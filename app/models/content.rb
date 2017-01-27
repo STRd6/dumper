@@ -4,8 +4,9 @@ require 'aws-sdk'
 class Content < ApplicationRecord
   self.table_name = "content"
   belongs_to :account
+  has_many :tags
 
-  def slurp(url)
+  def slurp(url, account)
     raise "Invalid URL" unless url.starts_with?("http")
 
     logger.info "Slurping #{url}"
@@ -34,7 +35,7 @@ class Content < ApplicationRecord
     existing_content = Content.find_by(sha256: sha256)
     if existing_content
       # Assume it it's the same
-      return
+      return existing_content
     end
 
     bucket = ENV["S3_BUCKET"]
@@ -55,6 +56,7 @@ class Content < ApplicationRecord
 
     if exists
       # Do nothing, assume it is the same
+      logger.info "object found in s3 at #{bucket}/#{key}"
     else
       logger.info "writing to s3 at #{bucket}/#{key}"
       s3.put_object({
@@ -67,11 +69,12 @@ class Content < ApplicationRecord
     end
 
     self.assign_attributes({
+      account: account,
       sha256: sha256,
       mime_type: content_type,
       size: size
     })
 
-    return true
+    return self
   end
 end

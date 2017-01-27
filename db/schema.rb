@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170126184737) do
+ActiveRecord::Schema.define(version: 20170127031201) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,17 @@ ActiveRecord::Schema.define(version: 20170126184737) do
     t.index ["sha256"], name: "index_content_on_sha256", unique: true, using: :btree
   end
 
+  create_table "tags", force: :cascade do |t|
+    t.integer  "account_id", null: false
+    t.integer  "content_id", null: false
+    t.string   "tag",        null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_tags_on_account_id", using: :btree
+    t.index ["content_id"], name: "index_tags_on_content_id", using: :btree
+    t.index ["tag", "account_id", "content_id"], name: "index_tags_on_tag_and_account_id_and_content_id", unique: true, using: :btree
+  end
+
   create_table "tokens", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.integer  "account_id",                 null: false
     t.boolean  "expired",    default: false, null: false
@@ -45,5 +56,7 @@ ActiveRecord::Schema.define(version: 20170126184737) do
     t.index ["account_id"], name: "index_tokens_on_account_id", using: :btree
   end
 
+  add_foreign_key "tags", "accounts"
+  add_foreign_key "tags", "content"
   add_foreign_key "tokens", "accounts"
 end
